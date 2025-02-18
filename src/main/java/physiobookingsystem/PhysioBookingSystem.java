@@ -8,7 +8,7 @@ import physiobookingsystem.controllers.MainController;
 
 /**
  *
- * @author USER
+ * @author  Lakshman 23086585
  */
 public class PhysioBookingSystem {
 

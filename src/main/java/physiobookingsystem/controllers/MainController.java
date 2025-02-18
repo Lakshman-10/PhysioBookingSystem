@@ -6,13 +6,15 @@ package physiobookingsystem.controllers;
 
 /**
  *
- * @author USER
+ * @author  Lakshman 23086585
  */
 public class MainController {
     private PatientController patientController;
+    public boolean exit; // Shared exit flag
     
     public MainController() {
-        this.patientController = new PatientController();
+        this.patientController = new PatientController(this);
+        this.exit = false; // Initialize exit as false
     }
     
     public void displayWelcomeMessage() {
@@ -24,8 +26,8 @@ public class MainController {
     }
     
     public void start() {
-        boolean exit = false;
         while (!exit) {
+            System.out.println(exit);
             
             System.out.println("\nMain Menu:");
             System.out.println("1. Manage Patients");
@@ -42,14 +44,14 @@ public class MainController {
                         patientController.start();
                         break;
                     case 2:
-                         System.out.println("Entered 2");
+                        System.out.println("Entered 2");
                         break;
                     case 3:
-                         System.out.println("Entered 3");
+                        System.out.println("Entered 3");
                         break;
                     case 4:
+                        System.out.println("Exiting the program. Goodbye!");
                         exit = true;
-                        System.out.println("Entered 4");
                         break;
                     default:
                         System.out.println("Invalid choice. Please try again.");
@@ -63,4 +65,5 @@ public class MainController {
         }
     }
 
+    
 }
