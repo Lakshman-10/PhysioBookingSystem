@@ -37,7 +37,8 @@ public class PatientController {
 
                 switch (choice) {
                     case 1:
-                        System.out.println("Entered 1");
+                        addPatient();
+                        isExit();
                         break;
                     case 2:
                          System.out.println("Entered 2");
@@ -76,7 +77,56 @@ public class PatientController {
         } else {
             System.out.println("No patients found.");
         }
-        
+    }
+    
+    public void addPatient() {
+    try {
+        // Generate auto-incremented ID
+        int newId = generateNextPatientId();
+
+        System.out.print("Enter Full Name: ");
+        String fullName = scanner.next();
+
+        System.out.print("Enter Address: ");
+        scanner.nextLine(); // Consume leftover newline
+        String address = scanner.nextLine();
+
+        System.out.print("Enter Phone Number: ");
+        String phone = scanner.next();
+
+        // Create a new patient object
+        Patient newPatient = new Patient(newId, fullName, address, phone);
+
+        // Save the patient to the file
+        if (PatientFileHandler.savePatientToFile(newPatient)) {
+            System.out.println("Patient added successfully and saved to file!");
+        } else {
+            System.out.println("Error: Could not save the patient to the file.");
+        }
+    } catch (Exception e) {
+        System.out.println("An error occurred while adding the patient: " + e.getMessage());
+    }
+}
+    
+    // this function is used to set a new ID to the newly added patient
+    private int generateNextPatientId() {
+        ArrayList<Patient> patients = PatientFileHandler.readPatientsFromFile();
+        int maxId = 0;
+
+        // Find the maximum existing ID
+        for (Patient patient : patients) {
+            try {
+                int currentId = patient.getId();
+                if (currentId > maxId) {
+                    maxId = currentId;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid Patient ID format: " + patient.getId());
+            }
+        }
+
+        // Increment the maximum ID by 1
+        return maxId + 1;
     }
     
     public void isExit(){

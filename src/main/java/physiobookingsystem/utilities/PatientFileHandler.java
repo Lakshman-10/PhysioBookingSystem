@@ -5,7 +5,10 @@
 package physiobookingsystem.utilities;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,5 +41,26 @@ public class PatientFileHandler {
             System.out.println("Error reading patients file: " + e.getMessage());
         }
         return patients;
+    }
+
+    // Save a patient to the file
+    public static boolean savePatientToFile(Patient patient) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) { // Append mode
+            File file = new File(FILE_PATH);
+
+            // Check if the file exists and is not empty
+            boolean isEmpty = !file.exists() || file.length() == 0;
+
+            // Write the patient data to a new line
+            String patientData = patient.getId() + "," + patient.getFullName() + "," + patient.getAddress() + "," + patient.getPhone();
+            if (!isEmpty) {
+               writer.newLine();
+            }// Add a newline at the end
+            writer.write(patientData);
+            return true; // Successfully saved
+        } catch (IOException e) {
+            System.out.println("Error saving patient to file: " + e.getMessage());
+            return false; // Failed to save
+        }
     }
 }
