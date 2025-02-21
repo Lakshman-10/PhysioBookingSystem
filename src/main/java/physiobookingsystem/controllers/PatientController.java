@@ -41,7 +41,8 @@ public class PatientController {
                         isExit();
                         break;
                     case 2:
-                         System.out.println("Entered 2");
+                         deletePatient();
+                         isExit();
                         break;
                     case 3:
                         patientlist();
@@ -84,7 +85,7 @@ public class PatientController {
         // Generate auto-incremented ID
         int newId = generateNextPatientId();
 
-        System.out.print("Enter Full Name: ");
+        System.out.print("\nEnter Full Name: ");
         String fullName = scanner.next();
 
         System.out.print("Enter Address: ");
@@ -128,6 +129,61 @@ public class PatientController {
         // Increment the maximum ID by 1
         return maxId + 1;
     }
+    
+    //this function is used to delete a patients
+    public void deletePatient() {
+        boolean deleteMore = true;
+
+        while (deleteMore) {
+            System.out.print("\nEnter the Patient ID to delete: ");
+            String patientId = scanner.next();
+
+            // Load all patients from the file
+            ArrayList<Patient> patients = PatientFileHandler.readPatientsFromFile();
+            Patient patientToDelete = null;
+
+            // Search for the patient by ID
+            for (Patient patient : patients) {
+                if (patient.getId() == Integer.parseInt(patientId)) {
+                    patientToDelete = patient;
+                    break;
+                }
+            }
+
+            if (patientToDelete != null) {
+                // Display the patient details                
+                System.out.println("\n Patient Details \n");
+                System.out.println("--------------------------------------------------------------------------------------------------------");
+                System.out.printf("%-15s%-20s%-40s%-15s%n", "Patient ID", "Full Name", "Address", "Phone");
+                System.out.println("--------------------------------------------------------------------------------------------------------");
+                System.out.printf("%-15s%-20s%-40s%-15s%n", patientToDelete.getId(), patientToDelete.getFullName(), patientToDelete.getAddress(), patientToDelete.getPhone());
+                System.out.println("--------------------------------------------------------------------------------------------------------");
+
+                // Ask for confirmation to delete
+                System.out.print("Are you sure you want to delete this patient? (Y/N): ");
+                String confirmation = scanner.next();
+
+                if (confirmation.equalsIgnoreCase("y")) {
+                    // Remove the patient and update the file
+                    patients.remove(patientToDelete);
+                    if (PatientFileHandler.saveAllPatientsToFile(patients)) {
+                        System.out.println("Patient deleted successfully!");
+                    } else {
+                        System.out.println("Error: Could not update the file.");
+                    }
+                } else {
+                    System.out.println("Patient deletion canceled.");
+                }
+            } else {
+                System.out.println("Patient with ID " + patientId + " not found.");
+            }
+
+            // Ask if the user wants to delete another patient
+            System.out.print("\nDo you want to delete another patient? (Y/N): ");
+            String response = scanner.next();
+            deleteMore = response.equalsIgnoreCase("y");
+    }
+}
     
     public void isExit(){
         // Ask if the user wants to exit or continue

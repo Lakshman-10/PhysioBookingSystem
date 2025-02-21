@@ -63,4 +63,20 @@ public class PatientFileHandler {
             return false; // Failed to save
         }
     }
+    
+    //this function is used to delete a particular patient
+    public static boolean saveAllPatientsToFile(ArrayList<Patient> patients) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+        // Overwrite the file with updated patient data
+        for (Patient patient : patients) {
+            String patientData = patient.getId() + "," + patient.getFullName() + "," + patient.getAddress() + "," + patient.getPhone();
+            writer.write(patientData);
+            writer.newLine();
+        }
+        return true; // Successfully saved
+    } catch (IOException e) {
+        System.out.println("Error saving patients to file: " + e.getMessage());
+        return false; // Failed to save
+    }
+}
 }
