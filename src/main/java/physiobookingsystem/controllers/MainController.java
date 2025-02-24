@@ -10,10 +10,12 @@ package physiobookingsystem.controllers;
  */
 public class MainController {
     private PatientController patientController;
+    private PhysioController physioController;
     public boolean exit; // Shared exit flag
     
     public MainController() {
         this.patientController = new PatientController(this);
+        this.physioController = new PhysioController(this);
         this.exit = false; // Initialize exit as false
     }
     
@@ -31,7 +33,7 @@ public class MainController {
             
             System.out.println("\nMain Menu:");
             System.out.println("1. Manage Patients");
-            System.out.println("2. Manage Appointments");
+            System.out.println("2. Manage Physios");
             System.out.println("3. Generate Reports");
             System.out.println("4. Exit");
             System.out.print("Enter your choice: ");
@@ -44,7 +46,7 @@ public class MainController {
                         patientController.start();
                         break;
                     case 2:
-                        System.out.println("Entered 2");
+                        physioController.start();
                         break;
                     case 3:
                         System.out.println("Entered 3");
