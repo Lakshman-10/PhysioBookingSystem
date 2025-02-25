@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package physiobookingsystem.utilities;
-
  
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,16 +22,16 @@ public class PhysioFileHandler {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Save all physiotherapists to JSON file
-//    public static boolean savePhysiosToJson(List<Physio> physios) {
-//        try {
-//            objectMapper.writeValue(new File(FILE_PATH), physios);
-//            return true;
-//        } catch (IOException e) {
-//            System.out.println("Error saving physiotherapists: " + e.getMessage());
-//            return false;
-//        }
-//    }
+    // Save all physiotherapists to file
+    public static boolean savePhysiosToJson(List<Physio> physios) {
+        try {
+            objectMapper.writeValue(new File(FILE_PATH), physios);
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error saving physiotherapists: " + e.getMessage());
+            return false;
+        }
+    }
 
     // Read all physiotherapists from file
     public static List<Physio> readPhysiosFromFile() {
