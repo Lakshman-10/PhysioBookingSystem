@@ -38,7 +38,7 @@ public class PhysioController {
             System.out.print("Enter your choice: ");
             try{
                 int choice = new java.util.Scanner(System.in).nextInt();
-
+                
                 switch (choice) {
                     case 1:
                         addPhysio();
@@ -113,6 +113,7 @@ public class PhysioController {
                                 treatments);
                         }
                     }
+                    System.out.println("\n");
                 }
                 System.out.println("--------------------------------------------------------------------------------------------------------");
             } else {
@@ -131,6 +132,9 @@ public class PhysioController {
 
             while (addMore) {
                 int physioId = generateNextPhysiotId();
+                if (scanner.hasNextLine()) {
+                    scanner.nextLine(); 
+                }
 
                 System.out.print("\nEnter Full Name: ");
                 String fullName = scanner.nextLine().trim();

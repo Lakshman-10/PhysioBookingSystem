@@ -18,7 +18,8 @@ import java.util.List;
  * @author Lakshman 23086585
  */
 public class PhysioFileHandler {
-    private static final String FILE_PATH = "D:\\herts\\Sem B\\PSE\\PhysioBookingSystem\\src\\main\\java\\physiobookingsystem\\files\\physios.json";
+    //private static final String FILE_PATH = "D:\\herts\\Sem B\\PSE\\PhysioBookingSystem\\src\\main\\java\\physiobookingsystem\\files\\physios.json";
+    private static final String FILE_PATH = "src/main/java/physiobookingsystem/files/physios.json";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

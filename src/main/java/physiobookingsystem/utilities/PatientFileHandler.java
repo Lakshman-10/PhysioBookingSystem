@@ -19,8 +19,9 @@ import physiobookingsystem.models.Patient;
  * @author  Lakshman 23086585
  */
 public class PatientFileHandler {
-    private static final String FILE_PATH = "D:\\herts\\Sem B\\PSE\\PhysioBookingSystem\\src\\main\\java\\physiobookingsystem\\files\\patients.txt";
-    //private static final String FILE_PATH = "files/patients.txt".replace("\\", "/");
+    //private static final String FILE_PATH = "D:\\herts\\Sem B\\PSE\\PhysioBookingSystem\\src\\main\\java\\physiobookingsystem\\files\\patients.txt";
+    private static final String FILE_PATH = "src/main/java/physiobookingsystem/files/patients.txt";
+
 
     // Reads patient data from the file and returns a list of Patient objects
     public static ArrayList<Patient> readPatientsFromFile() {
