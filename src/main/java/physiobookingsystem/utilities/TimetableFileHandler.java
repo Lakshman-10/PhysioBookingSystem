@@ -45,5 +45,14 @@ public class TimetableFileHandler {
                     .collect(Collectors.toList());
     }
     
+    //Get all time slots for a specific physio
+    public static List<Timetable> getSlotsByPhysio(List<Integer> matchingPhysioIds) {
+        List<Timetable> allSlots = readTimetableFromFile();
+
+        return allSlots.stream()
+                .filter(slot -> matchingPhysioIds.contains(slot.getPhysioId()))
+                .collect(Collectors.toList());
+    }
+    
     
 }

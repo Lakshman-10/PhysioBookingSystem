@@ -4,6 +4,7 @@
  */
 package physiobookingsystem.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import physiobookingsystem.models.Physio;
@@ -43,6 +44,7 @@ public class BookingController {
                         isExit();
                         break;
                     case 2: 
+                        searchByPhysioId();
                         isExit();
                         break; 
                     case 3:
@@ -59,10 +61,10 @@ public class BookingController {
         }
     }
     
+    //method is used to show all the appointments for a specific expertise area
     public void searchByExpertiseArea() { 
         try{
             List<Timetable> availableSlots;
-            List<Physio> physios = PhysioFileHandler.readPhysiosFromFile();
             
             System.out.print("Enter Expertise Area: ");
             String expertise = scanner.nextLine().trim(); 
@@ -70,35 +72,81 @@ public class BookingController {
             
             if(availableSlots.size()>0){
                 // Display available appointments
-                System.out.println("\nAvailable Slots for " + expertise);
-                System.out.printf("%-5s%-25s%-30s%-30s%-15s%-15s%-15s%n", "ID", "Physio ID", "Expertise", "Treatment", "Date", "Time", "Status");
-                System.out.println("-----------------------------------------------------------------------------------------------------------------------------------");
-
-                for (int i = 0; i < availableSlots.size(); i++) {
-                    Timetable slot = availableSlots.get(i);
-
-                    String physioName = "Unknown";
-                    for (Physio physio : physios) {
-                        if (physio.getId() == slot.getPhysioId()) {
-                            physioName = physio.getFullName();
-                            break;
-                        }
-                    }
-
-                    System.out.printf("%-5d%-25s%-30s%-30s%-15s%-15s%-15s%n",
-                            slot.getId(), physioName, slot.getExpertiseArea(), slot.getTreatment(),
-                            slot.getDate(),slot.getTime(), slot.getStatus());
-                }
+                displayAvailableSlots(expertise, availableSlots);
             }
             else{
                 System.out.println("\nNo Available Slots for " + expertise);
             }
-
-            
         }
         catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
         }
+    }
+    
+    //method is used to show all the appointments for a specific physio
+    public void searchByPhysioId() { 
+        try{
+            List<Timetable> availableSlots;
+            List<Physio> physios = PhysioFileHandler.readPhysiosFromFile();
+            
+            System.out.print("Enter Physio Name: ");
+            String physioName = scanner.nextLine().trim();
+                        
+            List<Integer> matchingPhysioIds = new ArrayList<>();
+            for (Physio physio : physios) {
+                if (physio.getFullName().toLowerCase().contains(physioName.toLowerCase())) {
+                    matchingPhysioIds.add(physio.getId());
+                } 
+            }
+            
+            if(matchingPhysioIds.size()>0){
+                availableSlots = TimetableFileHandler.getSlotsByPhysio(matchingPhysioIds);
+            
+                if(availableSlots.size()>0){
+                    // Display available appointments
+                    displayAvailableSlots(physioName, availableSlots);
+                }
+                else{
+                    System.out.println("\nNo Available Slots for " + physioName);
+                }
+            }
+            else{
+                System.out.println("No physiotherapists found with the name " + physioName );
+            }
+            
+        }
+        catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        } 
+    }
+    
+    public void displayAvailableSlots(String searchTxt, List<Timetable> availableSlots ){
+        try{
+          List<Physio> physios = PhysioFileHandler.readPhysiosFromFile();
+          System.out.println("\nAvailable Slots for " + searchTxt);
+          System.out.printf("%-5s%-25s%-30s%-30s%-15s%-15s%-15s%n", "ID", "Physio ID", "Expertise", "Treatment", "Date", "Time", "Status");
+          System.out.println("-----------------------------------------------------------------------------------------------------------------------------------");
+
+          for (int i = 0; i < availableSlots.size(); i++) {
+              Timetable slot = availableSlots.get(i);
+
+              String physioName = "Unknown";
+              for (Physio physio : physios) {
+                  if (physio.getId() == slot.getPhysioId()) {
+                      physioName = physio.getFullName();
+                      break;
+                  }
+              }
+
+              System.out.printf("%-5d%-25s%-30s%-30s%-15s%-15s%-15s%n",
+                      slot.getId(), physioName, slot.getExpertiseArea(), slot.getTreatment(),
+                      slot.getDate(),slot.getTime(), slot.getStatus());
+          }  
+        }
+        catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+        
     }
     
     public void isExit(){
