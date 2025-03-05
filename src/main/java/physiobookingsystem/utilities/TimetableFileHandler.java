@@ -54,5 +54,62 @@ public class TimetableFileHandler {
                 .collect(Collectors.toList());
     }
     
+    //this method is used to check whether the patient has duplicate booking
+    public static boolean canBookSlot(String patientId, String bookingId) {
+        List<Timetable> slots = readTimetableFromFile();
+
+        Timetable selectedSlot = slots.stream()
+                .filter(slot -> slot.getId() == Integer.parseInt(bookingId))
+                .findFirst()
+                .orElse(null);
+
+        if (selectedSlot == null) {
+            System.out.println("No Appointment found with the booking ID " + bookingId);
+            return false;
+        }
+
+        if (!(selectedSlot.getStatus().equalsIgnoreCase("Available") || selectedSlot.getStatus().equalsIgnoreCase("Cancelled"))) {
+            System.out.println("This slot is already booked.");
+            return false;
+        }
+
+        boolean duplicateBooking = slots.stream()
+                .anyMatch(slot -> 
+                        slot.getPatientId() == Integer.parseInt(patientId) &&
+                        slot.getDate().equals(selectedSlot.getDate()) &&
+                        slot.getTime().equals(selectedSlot.getTime())
+                );
+
+        if (duplicateBooking) {
+            System.out.println("You already have another booking at this time.");
+            return false;
+        }
+
+        return true; // Booking is allowed
+    }
+    
+    //this method is used to update the booking in file
+    public static boolean updateBooking(String patientId, String bookingId, String status) {
+        List<Timetable> slots = readTimetableFromFile();
+        boolean success = false;
+        try{
+            for (Timetable slot : slots) {
+                if (slot.getId() == Integer.parseInt(bookingId)) {
+                    slot.setPatientId(Integer.parseInt(patientId));
+                    slot.setStatus(status);
+                }
+            }
+        
+            objectMapper.writeValue(new File(FILE_PATH), slots);
+            System.out.println("Booking successfully " + status);
+            success = true;
+            return success;
+        }
+        catch (IOException e) {
+            System.out.println("Error reading timetable: " + e.getMessage());
+            return false;
+        }
+    }
+           
     
 }

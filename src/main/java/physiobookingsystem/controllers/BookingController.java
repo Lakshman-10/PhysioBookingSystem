@@ -5,10 +5,13 @@
 package physiobookingsystem.controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import physiobookingsystem.models.Patient;
 import physiobookingsystem.models.Physio;
 import physiobookingsystem.models.Timetable;
+import physiobookingsystem.utilities.PatientFileHandler;
 import physiobookingsystem.utilities.PhysioFileHandler;
 import physiobookingsystem.utilities.TimetableFileHandler;
 
@@ -72,7 +75,14 @@ public class BookingController {
             
             if(availableSlots.size()>0){
                 // Display available appointments
+                System.out.println("\nAvailable Slots for " + expertise);
                 displayAvailableSlots(expertise, availableSlots);
+                
+                System.out.print("\nDo you want to book an appointment? (Y/N): ");
+                String responseBooking = scanner.next();
+                if (responseBooking.equalsIgnoreCase("y")) {
+                     bookingModification("Booked");
+                }
             }
             else{
                 System.out.println("\nNo Available Slots for " + expertise);
@@ -104,7 +114,14 @@ public class BookingController {
             
                 if(availableSlots.size()>0){
                     // Display available appointments
+                    System.out.println("\nAvailable Slots for " + physioName);
                     displayAvailableSlots(physioName, availableSlots);
+                    
+                    System.out.print("\nDo you want to book an appointment? (Y/N): ");
+                    String responseBooking = scanner.next();
+                    if (responseBooking.equalsIgnoreCase("y")) {
+                         bookingModification("Booked");
+                    }
                 }
                 else{
                     System.out.println("\nNo Available Slots for " + physioName);
@@ -120,10 +137,11 @@ public class BookingController {
         } 
     }
     
+    //this method is used to display the timetable slots
     public void displayAvailableSlots(String searchTxt, List<Timetable> availableSlots ){
         try{
           List<Physio> physios = PhysioFileHandler.readPhysiosFromFile();
-          System.out.println("\nAvailable Slots for " + searchTxt);
+          
           System.out.printf("%-5s%-25s%-30s%-30s%-15s%-15s%-15s%n", "ID", "Physio ID", "Expertise", "Treatment", "Date", "Time", "Status");
           System.out.println("-----------------------------------------------------------------------------------------------------------------------------------");
 
@@ -142,6 +160,61 @@ public class BookingController {
                       slot.getId(), physioName, slot.getExpertiseArea(), slot.getTreatment(),
                       slot.getDate(),slot.getTime(), slot.getStatus());
           }  
+        }
+        catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+        
+    }
+    
+    //this method is used to book or cancel or attent an appointment
+    public void bookingModification(String status){
+        try{
+            System.out.print("Enter Booking Id: ");
+            String bookingID = scanner.next();
+            
+            System.out.print("Enter Patient Id: ");
+            String patientId = scanner.next();
+
+            // Load all patients from the file
+            ArrayList<Patient> patients = PatientFileHandler.readPatientsFromFile();
+            Patient patientToBook = null;
+
+            // Search for the patient by ID
+            for (Patient patient : patients) {
+                if (patient.getId() == Integer.parseInt(patientId)) {
+                    patientToBook = patient;
+                    break;
+                }
+            }
+
+            //Check whether there is a patient registered with the ID
+            if (patientToBook != null) {
+                if(TimetableFileHandler.canBookSlot(patientId, bookingID) && status == "Booked"){
+                    //only used for booking an appointment only. This will validates the duplicate booking
+                    if(TimetableFileHandler.updateBooking(patientId, bookingID, status)){
+                        
+                        // Display the booked slot
+                        List<Timetable> slots = TimetableFileHandler.readTimetableFromFile();
+                        for (Timetable slot : slots) {
+                            if (slot.getId() == Integer.parseInt(bookingID)) {
+                                List<Timetable> slotList = Collections.singletonList(slot);
+                                System.out.println("\nBooking Details");
+                                displayAvailableSlots("Booking Details", slotList);  
+                            }
+                        }
+                    } 
+                }
+                else{
+                    if(status != "Booked"){
+                        //only used for cancelling or attending an appointment only.
+                        System.out.println("Cancel || Attend Section");
+                    }
+                }
+            }
+            else{
+                System.out.println("No patient found with the ID " + patientId);
+            }
         }
         catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
