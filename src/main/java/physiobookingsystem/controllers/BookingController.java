@@ -24,12 +24,14 @@ public class BookingController {
     Scanner scanner = new Scanner(System.in);
     public boolean bookingMenuexit;
     public boolean cancelMenuexit;
+    public boolean attendMenuexit;
     
     public BookingController(MainController mainController) {
         this.mainController = mainController;
         this.scanner = new Scanner(System.in);
         this.bookingMenuexit = false;
         this.cancelMenuexit = false;
+        this.attendMenuexit = false;
     }
     
     public void start() {
@@ -214,28 +216,40 @@ public class BookingController {
                         }
                     } 
                 }
-                else{
-                    if(TimetableFileHandler.canCancelSlot(patientId, bookingID) && status == "Cancelled"){
-                        //only used for cancelling appointment only.
-                        if(TimetableFileHandler.updateBooking("0", bookingID, status)){
-                            // Display the booked slot
-                            List<Timetable> slots = TimetableFileHandler.readTimetableFromFile();
-                            for (Timetable slot : slots) {
-                                if (slot.getId() == Integer.parseInt(bookingID)) {
-                                    List<Timetable> slotList = Collections.singletonList(slot);
-                                    System.out.println("\nBooking Details");
-                                    displayAvailableSlots("Booking Details", slotList);  
-                                }
+                else if(status == "Cancelled" && TimetableFileHandler.canCancelSlot(patientId, bookingID) ){
+                    //only used for cancelling appointment only.
+                    if(TimetableFileHandler.updateBooking("0", bookingID, status)){
+                        // Display the booked slot
+                        List<Timetable> slots = TimetableFileHandler.readTimetableFromFile();
+                        for (Timetable slot : slots) {
+                            if (slot.getId() == Integer.parseInt(bookingID)) {
+                                List<Timetable> slotList = Collections.singletonList(slot);
+                                System.out.println("\nBooking Details");
+                                displayAvailableSlots("Booking Details", slotList);  
                             }
-                            //Ask the user whether needed another booking
-                            System.out.print("\nDo you want to book an appointment again? (Y/N): ");
-                            String responseReBooking = scanner.next();
-                            if (responseReBooking.equalsIgnoreCase("y")) {
-                                bookingMenuexit = false;
-                                start();
+                        }
+                        //Ask the user whether needed another booking
+                        System.out.print("\nDo you want to book an appointment again? (Y/N): ");
+                        String responseReBooking = scanner.next();
+                        if (responseReBooking.equalsIgnoreCase("y")) {
+                            bookingMenuexit = false;
+                            start();
+                        }
+                    } 
+                }
+                else if(status == "Attended" && TimetableFileHandler.canAttendSlot(patientId, bookingID)){
+                    //only used for attending appointment only.
+                    if(TimetableFileHandler.updateBooking(patientId, bookingID, status)){
+                        // Display the booked slot
+                        List<Timetable> slots = TimetableFileHandler.readTimetableFromFile();
+                        for (Timetable slot : slots) {
+                            if (slot.getId() == Integer.parseInt(bookingID)) {
+                                List<Timetable> slotList = Collections.singletonList(slot);
+                                System.out.println("\nBooking Details");
+                                displayAvailableSlots("Booking Details", slotList);  
                             }
                         } 
-                    }
+                    } 
                 }
             }
             else{
@@ -256,9 +270,26 @@ public class BookingController {
 
             bookingModification("Cancelled");
             System.out.print("\nDo you want to cancel another appointment (Y/N): ");
+            String responseAttend = scanner.next();
+            if (responseAttend.equalsIgnoreCase("n")) {
+                cancelMenuexit = true;
+                bookingMenuexit = true;
+                break;
+            }
+        }
+    }
+    
+    //Attending the booking
+    public void attendBooking(){
+        attendMenuexit = false;
+        while (!attendMenuexit) {  
+            System.out.println("\nAttend an Appointment:"); 
+
+            bookingModification("Attended");
+            System.out.print("\nDo you want to attend another appointment (Y/N): ");
             String responseCancel = scanner.next();
             if (responseCancel.equalsIgnoreCase("n")) {
-                cancelMenuexit = true;
+                attendMenuexit = true;
                 bookingMenuexit = true;
                 break;
             }

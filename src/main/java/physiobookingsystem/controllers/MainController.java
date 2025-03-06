@@ -59,7 +59,7 @@ public class MainController {
                         bookingController.cancelBooking();
                         break;
                     case 5:
-                        bookingController.start();
+                        bookingController.attendBooking();
                         break;
                     case 6:
                         bookingController.start();

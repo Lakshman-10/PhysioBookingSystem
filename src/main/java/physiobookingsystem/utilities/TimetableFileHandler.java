@@ -101,6 +101,11 @@ public class TimetableFileHandler {
             System.out.println("No Appointment found with the booking ID " + bookingId);
             return false;
         }
+        
+        if(selectedSlot.getStatus().equalsIgnoreCase("Attended")){
+            System.out.println("This slot is already attended");
+            return false;
+        }
 
         if(!selectedSlot.getStatus().equalsIgnoreCase("Booked") || selectedSlot.getPatientId() != Integer.parseInt(patientId)) {
             System.out.println("This slot is not booked by the patient Id " + patientId);
@@ -108,6 +113,33 @@ public class TimetableFileHandler {
         }  
 
         return true; // Cancelling is allowed
+    }
+    
+    //this method is used to check whether the patient can attend the particular booking slot
+    public static boolean canAttendSlot(String patientId, String bookingId) {
+        List<Timetable> slots = readTimetableFromFile();
+
+        Timetable selectedSlot = slots.stream()
+                .filter(slot -> slot.getId() == Integer.parseInt(bookingId))
+                .findFirst()
+                .orElse(null);
+
+        if(selectedSlot == null){
+            System.out.println("No Appointment found with the booking ID " + bookingId);
+            return false;
+        }
+        
+        if(selectedSlot.getStatus().equalsIgnoreCase("Attended")){
+            System.out.println("This slot is already attended");
+            return false;
+        }
+
+        if(!selectedSlot.getStatus().equalsIgnoreCase("Booked") || selectedSlot.getPatientId() != Integer.parseInt(patientId)) {
+            System.out.println("This slot is not booked by the patient Id " + patientId);
+            return false;
+        }  
+
+        return true; // Attending is allowed
     }
     
     //this method is used to update the booking in file
