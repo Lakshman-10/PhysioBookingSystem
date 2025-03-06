@@ -31,14 +31,15 @@ public class MainController {
     
     public void start() {
         while (!exit) {
-            System.out.println(exit);
             
             System.out.println("\nMain Menu:");
             System.out.println("1. Manage Patients");
             System.out.println("2. Manage Physios");
             System.out.println("3. Book a Treatment Appointment");
-            System.out.println("4. Generate Reports");
-            System.out.println("5. Exit");
+            System.out.println("4. Change a Booking");
+            System.out.println("5. Attend a Booking");
+            System.out.println("6. Generate Reports");
+            System.out.println("7. Exit");
             System.out.print("Enter your choice: ");
             
             try{
@@ -55,6 +56,15 @@ public class MainController {
                         bookingController.start();
                         break;
                     case 4:
+                        bookingController.cancelBooking();
+                        break;
+                    case 5:
+                        bookingController.start();
+                        break;
+                    case 6:
+                        bookingController.start();
+                        break;
+                    case 7:
                         System.out.println("Exiting the program. Goodbye!");
                         exit = true;
                         break;

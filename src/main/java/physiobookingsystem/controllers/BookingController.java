@@ -23,14 +23,17 @@ public class BookingController {
     private MainController mainController;
     Scanner scanner = new Scanner(System.in);
     public boolean bookingMenuexit;
+    public boolean cancelMenuexit;
     
     public BookingController(MainController mainController) {
         this.mainController = mainController;
         this.scanner = new Scanner(System.in);
         this.bookingMenuexit = false;
+        this.cancelMenuexit = false;
     }
     
     public void start() {
+        bookingMenuexit = false;
         while (!bookingMenuexit) {
             System.out.println("\nBook an Appointment:");
             System.out.println("1. Search by Expertise Area");
@@ -44,11 +47,17 @@ public class BookingController {
                 switch (choice) {
                     case 1: 
                         searchByExpertiseArea();
-                        isExit();
+                        //If user is redirected to rebooking then Exit option is disabled because we can exit from the cancel function
+                        if(cancelMenuexit){
+                            isExit();
+                        }                        
                         break;
                     case 2: 
                         searchByPhysioId();
-                        isExit();
+                        //If user is redirected to rebooking then Exit option is disabled because we can exit from the cancel function
+                        if(cancelMenuexit){
+                            isExit();
+                        }   
                         break; 
                     case 3:
                         bookingMenuexit = true;
@@ -190,7 +199,7 @@ public class BookingController {
 
             //Check whether there is a patient registered with the ID
             if (patientToBook != null) {
-                if(TimetableFileHandler.canBookSlot(patientId, bookingID) && status == "Booked"){
+                if(status == "Booked" && TimetableFileHandler.canBookSlot(patientId, bookingID) ){
                     //only used for booking an appointment only. This will validates the duplicate booking
                     if(TimetableFileHandler.updateBooking(patientId, bookingID, status)){
                         
@@ -206,9 +215,26 @@ public class BookingController {
                     } 
                 }
                 else{
-                    if(status != "Booked"){
-                        //only used for cancelling or attending an appointment only.
-                        System.out.println("Cancel || Attend Section");
+                    if(TimetableFileHandler.canCancelSlot(patientId, bookingID) && status == "Cancelled"){
+                        //only used for cancelling appointment only.
+                        if(TimetableFileHandler.updateBooking("0", bookingID, status)){
+                            // Display the booked slot
+                            List<Timetable> slots = TimetableFileHandler.readTimetableFromFile();
+                            for (Timetable slot : slots) {
+                                if (slot.getId() == Integer.parseInt(bookingID)) {
+                                    List<Timetable> slotList = Collections.singletonList(slot);
+                                    System.out.println("\nBooking Details");
+                                    displayAvailableSlots("Booking Details", slotList);  
+                                }
+                            }
+                            //Ask the user whether needed another booking
+                            System.out.print("\nDo you want to book an appointment again? (Y/N): ");
+                            String responseReBooking = scanner.next();
+                            if (responseReBooking.equalsIgnoreCase("y")) {
+                                bookingMenuexit = false;
+                                start();
+                            }
+                        } 
                     }
                 }
             }
@@ -222,6 +248,23 @@ public class BookingController {
         
     }
     
+    //Cancelling the booking
+    public void cancelBooking(){
+        cancelMenuexit = false;
+        while (!cancelMenuexit) {  
+            System.out.println("\nCancel an Appointment:"); 
+
+            bookingModification("Cancelled");
+            System.out.print("\nDo you want to cancel another appointment (Y/N): ");
+            String responseCancel = scanner.next();
+            if (responseCancel.equalsIgnoreCase("n")) {
+                cancelMenuexit = true;
+                bookingMenuexit = true;
+                break;
+            }
+        }
+    }
+    
     public void isExit(){
         // Ask if the user wants to exit or continue
         System.out.print("\nDo you want to exit the program? (Y/N): ");
@@ -229,6 +272,7 @@ public class BookingController {
         if (response.equalsIgnoreCase("y")) {
             mainController.exit = true; 
             bookingMenuexit = true;
+            cancelMenuexit = true;
             System.out.println("Exiting the program. Goodbye!");
         }
     }

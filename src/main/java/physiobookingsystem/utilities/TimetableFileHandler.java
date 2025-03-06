@@ -88,6 +88,28 @@ public class TimetableFileHandler {
         return true; // Booking is allowed
     }
     
+    //this method is used to check whether the patient has booked the particular booking slot
+    public static boolean canCancelSlot(String patientId, String bookingId) {
+        List<Timetable> slots = readTimetableFromFile();
+
+        Timetable selectedSlot = slots.stream()
+                .filter(slot -> slot.getId() == Integer.parseInt(bookingId))
+                .findFirst()
+                .orElse(null);
+
+        if(selectedSlot == null){
+            System.out.println("No Appointment found with the booking ID " + bookingId);
+            return false;
+        }
+
+        if(!selectedSlot.getStatus().equalsIgnoreCase("Booked") || selectedSlot.getPatientId() != Integer.parseInt(patientId)) {
+            System.out.println("This slot is not booked by the patient Id " + patientId);
+            return false;
+        }  
+
+        return true; // Cancelling is allowed
+    }
+    
     //this method is used to update the booking in file
     public static boolean updateBooking(String patientId, String bookingId, String status) {
         List<Timetable> slots = readTimetableFromFile();

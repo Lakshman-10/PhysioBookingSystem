@@ -25,6 +25,7 @@ public class PatientController {
     }
     
     public void start() {
+        patientMenuexit = false;
         while (!patientMenuexit) {
             System.out.println("\nManage Patients:");
             System.out.println("1. Add a Patient");

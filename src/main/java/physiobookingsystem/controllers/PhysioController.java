@@ -29,6 +29,7 @@ public class PhysioController {
     }
     
     public void start() {
+        physioMenuexit = false;
         while (!physioMenuexit) {
             System.out.println("\nManage Physios:");
             System.out.println("1. Add a Physio");
