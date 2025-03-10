@@ -62,7 +62,7 @@ public class MainController {
                         bookingController.attendBooking();
                         break;
                     case 6:
-                        bookingController.start();
+                        new ReportController();
                         break;
                     case 7:
                         System.out.println("Exiting the program. Goodbye!");
