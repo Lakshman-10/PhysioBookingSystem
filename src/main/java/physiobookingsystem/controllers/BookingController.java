@@ -188,7 +188,7 @@ public class BookingController {
             String patientId = scanner.next();
 
             // Load all patients from the file
-            ArrayList<Patient> patients = PatientFileHandler.readPatientsFromFile();
+            List<Patient> patients = PatientFileHandler.readPatientsFromFile();
             Patient patientToBook = null;
 
             // Search for the patient by ID

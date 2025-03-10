@@ -4,7 +4,7 @@
  */
 package physiobookingsystem.controllers;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner; 
 import physiobookingsystem.models.Patient;
 import physiobookingsystem.utilities.PatientFileHandler;
@@ -65,7 +65,7 @@ public class PatientController {
     
     public void patientlist(){ 
         // Load patients from file
-        ArrayList<Patient> patients = PatientFileHandler.readPatientsFromFile();
+        List<Patient> patients = PatientFileHandler.readPatientsFromFile();
         
         if (patients != null && !patients.isEmpty()) {
             System.out.println("\n Patients Details \n");
@@ -98,9 +98,14 @@ public class PatientController {
 
         // Create a new patient object
         Patient newPatient = new Patient(newId, fullName, address, phone);
+        
+        // Load existing patients, add new patient, and save
+        List<Patient> patients = PatientFileHandler.readPatientsFromFile();
+        patients.add(newPatient);
+        PatientFileHandler.savePatientsToJson(patients); 
 
         // Save the patient to the file
-        if (PatientFileHandler.savePatientToFile(newPatient)) {
+        if (PatientFileHandler.savePatientsToJson(patients)) {
             System.out.println("Patient added successfully and saved to file!");
         } else {
             System.out.println("Error: Could not save the patient to the file.");
@@ -112,7 +117,7 @@ public class PatientController {
     
     // this function is used to set a new ID to the newly added patient
     private int generateNextPatientId() {
-        ArrayList<Patient> patients = PatientFileHandler.readPatientsFromFile();
+        List<Patient> patients = PatientFileHandler.readPatientsFromFile();
         int maxId = 0;
 
         // Find the maximum existing ID
@@ -140,7 +145,7 @@ public class PatientController {
             String patientId = scanner.next();
 
             // Load all patients from the file
-            ArrayList<Patient> patients = PatientFileHandler.readPatientsFromFile();
+            List<Patient> patients = PatientFileHandler.readPatientsFromFile();
             Patient patientToDelete = null;
 
             // Search for the patient by ID
@@ -167,7 +172,7 @@ public class PatientController {
                 if (confirmation.equalsIgnoreCase("y")) {
                     // Remove the patient and update the file
                     patients.remove(patientToDelete);
-                    if (PatientFileHandler.saveAllPatientsToFile(patients)) {
+                    if (PatientFileHandler.savePatientsToJson(patients)) {
                         System.out.println("Patient deleted successfully!");
                     } else {
                         System.out.println("Error: Could not update the file.");

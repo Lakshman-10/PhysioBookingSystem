@@ -9,6 +9,7 @@ package physiobookingsystem.models;
  * @author Lakshman 23086585
  */
 public class Patient {
+    public Patient() {} 
     
     public Patient(int id, String fullName, String address, String phone) {
         this.id = id;

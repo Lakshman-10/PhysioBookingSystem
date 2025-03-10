@@ -3,12 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package physiobookingsystem.utilities;
+ 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,68 +15,36 @@ import physiobookingsystem.models.Patient;
 
 /**
  *
- * @author  Lakshman 23086585
+ * @author Lakshman 23086585
  */
 public class PatientFileHandler {
-    //private static final String FILE_PATH = "D:\\herts\\Sem B\\PSE\\PhysioBookingSystem\\src\\main\\java\\physiobookingsystem\\files\\patients.txt";
-    private static final String FILE_PATH = "src/main/java/physiobookingsystem/files/patients.txt";
+    private static final String FILE_PATH = "src/main/java/physiobookingsystem/files/patients.json";
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Reads patient data from the file and returns a list of Patient objects
-    public static ArrayList<Patient> readPatientsFromFile() {
-        ArrayList<Patient> patients = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",", 3); // Split by comma
-                if (data.length == 3) { // Ensure all fields are present
-                    int id = Integer.parseInt(data[0].trim());
-                    String name = data[1].trim();
-                    String address = data[2].substring(0, data[2].lastIndexOf(',')).trim();
-                    String phone = data[2].substring(data[2].lastIndexOf(',') + 1).trim();
-                    patients.add(new Patient(id, name, address, phone));
-                }
-            }
+    // Save all patients to file
+    public static boolean savePatientsToJson(List<Patient> patients) {
+        try {
+            objectMapper.writeValue(new File(FILE_PATH), patients);
+            return true;
         } catch (IOException e) {
-            System.out.println("Error reading patients file: " + e.getMessage());
+            System.out.println("Error saving patients: " + e.getMessage());
+            return false;
         }
-        return patients;
     }
 
-    // Save a patient to the file
-    public static boolean savePatientToFile(Patient patient) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) { // Append mode
-            File file = new File(FILE_PATH);
+    // Read all patients from file
+    public static List<Patient> readPatientsFromFile() {
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            return new ArrayList<>(); // Return empty list if file does not exist
+        }
 
-            // Check if the file exists and is not empty
-            boolean isEmpty = !file.exists() || file.length() == 0;
-
-            // Write the patient data to a new line
-            String patientData = patient.getId() + "," + patient.getFullName() + "," + patient.getAddress() + "," + patient.getPhone();
-            if (!isEmpty) {
-               writer.newLine();
-            }// Add a newline at the end
-            writer.write(patientData);
-            return true; // Successfully saved
+        try {
+            return objectMapper.readValue(file, new TypeReference<List<Patient>>() {});
         } catch (IOException e) {
-            System.out.println("Error saving patient to file: " + e.getMessage());
-            return false; // Failed to save
+            System.out.println("Error reading patients: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
-    
-    //this function is used to delete a particular patient
-    public static boolean saveAllPatientsToFile(ArrayList<Patient> patients) {
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-        // Overwrite the file with updated patient data
-        for (Patient patient : patients) {
-            String patientData = patient.getId() + "," + patient.getFullName() + "," + patient.getAddress() + "," + patient.getPhone();
-            writer.write(patientData);
-            writer.newLine();
-        }
-        return true; // Successfully saved
-    } catch (IOException e) {
-        System.out.println("Error saving patients to file: " + e.getMessage());
-        return false; // Failed to save
-    }
-}
 }
