@@ -82,41 +82,73 @@ public class PatientController {
     }
     
     public void addPatient() {
-    try {
-        // Generate auto-incremented ID
-        int newId = generateNextPatientId();
+        try {
+            // Generate auto-incremented ID
+            int newId = generateNextPatientId();
 
-        System.out.print("\nEnter Full Name: ");
-        String fullName = scanner.next();
+            System.out.print("\nEnter Full Name: ");
+            String fullName = scanner.next();
 
-        System.out.print("Enter Address: ");
-        scanner.nextLine(); // Consume leftover newline
-        String address = scanner.nextLine();
+            System.out.print("Enter Address: ");
+            scanner.nextLine(); // Consume leftover newline
+            String address = scanner.nextLine();
 
-        System.out.print("Enter Phone Number: ");
-        String phone = scanner.next();
+            System.out.print("Enter Phone Number: ");
+            String phone = scanner.next();            
 
-        // Create a new patient object
-        Patient newPatient = new Patient(newId, fullName, address, phone);
-        
-        // Load existing patients, add new patient, and save
-        List<Patient> patients = PatientFileHandler.readPatientsFromFile();
-        patients.add(newPatient);
-        PatientFileHandler.savePatientsToJson(patients); 
-
-        // Save the patient to the file
-        if (PatientFileHandler.savePatientsToJson(patients)) {
-            System.out.println("Patient added successfully and saved to file!");
-        } else {
-            System.out.println("Error: Could not save the patient to the file.");
+            // Create a new patient object
+            Patient newPatient = new Patient(newId, fullName, address, phone);
+            savePatient(newPatient);
+            
+        } catch (Exception e) {
+            System.out.println("An error occurred while adding the patient: " + e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println("An error occurred while adding the patient: " + e.getMessage());
     }
-}
+    
+    public boolean savePatient(Patient patient){
+        try{
+
+            if (patient.getFullName().trim().isEmpty()) {
+                System.out.println("Patient name cannot be empty.");
+                return false;
+            }
+            if (patient.getAddress().trim().isEmpty()) {
+                System.out.println("Address cannot be empty");
+                return false;
+            }
+            if (patient.getPhone().trim().isEmpty()) {
+                System.out.println("Phone number cannot be empty");
+                return false;
+            } 
+            
+             if (isDuplicateId(patient.getId())) {
+                System.out.println("Patient ID already exists.");
+                return false;
+            }
+            
+            // Load existing patients, add new patient, and save
+            List<Patient> patients = PatientFileHandler.readPatientsFromFile();
+            patients.add(patient);
+            PatientFileHandler.savePatientsToJson(patients); 
+
+            // Save the patient to the file
+            if (PatientFileHandler.savePatientsToJson(patients)) {
+                System.out.println("Patient added successfully and saved to file!");
+                return true;
+            } else {
+                System.out.println("Error: Could not save the patient to the file.");
+                return false;
+            }
+            
+        } catch (Exception e) {
+            System.out.println("An error occurred while saving the patient: " + e.getMessage());
+            return false;
+        }
+    }
+
     
     // this function is used to set a new ID to the newly added patient
-    private int generateNextPatientId() {
+    public int generateNextPatientId() {
         List<Patient> patients = PatientFileHandler.readPatientsFromFile();
         int maxId = 0;
 
@@ -188,8 +220,9 @@ public class PatientController {
             System.out.print("\nDo you want to delete another patient? (Y/N): ");
             String response = scanner.next();
             deleteMore = response.equalsIgnoreCase("y");
+        }
     }
-}
+     
     
     public void isExit(){
         // Ask if the user wants to exit or continue
@@ -200,5 +233,11 @@ public class PatientController {
             patientMenuexit = true;
             System.out.println("Exiting the program. Goodbye!");
         }
+    }
+    
+    // method to check if the ID already exists
+    private static boolean isDuplicateId(int patientId) {
+        List<Patient> patients = PatientFileHandler.readPatientsFromFile();
+        return patients.stream().anyMatch(p -> p.getId() == patientId);
     }
 }
