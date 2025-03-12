@@ -96,7 +96,7 @@ public class PatientControllerTest {
     @Test
     void testAddPatient_DuplicateId() {
         int id = patientController.generateNextPatientId()-1;
-        Patient newPatient = new Patient(id, "Test Name1", "Test Address1", "077098765"); // Empty phone number
+        Patient newPatient = new Patient(id, "Test Name1", "Test Address1", "077098765"); // Duplicate Id
         boolean result = patientController.savePatient(newPatient);
         assertFalse(result, "Patient should not be added with duplicate ID");
     }

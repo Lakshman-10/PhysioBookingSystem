@@ -166,12 +166,7 @@ public class PhysioController {
 
                 // Create Physio object
                 Physio newPhysio = new Physio(physioId, fullName, address, phone, expertiseAreas);
-                // Load existing physios, add new physio, and save
-                List<Physio> physios = PhysioFileHandler.readPhysiosFromFile();
-                physios.add(newPhysio);
-                PhysioFileHandler.savePhysiosToJson(physios);
-
-                System.out.println("\nPhysiotherapist added successfully!");
+                savePhysio(newPhysio);
                 addMore = false;
             }
         }
@@ -180,6 +175,48 @@ public class PhysioController {
         }
         
     }
+    
+    public boolean savePhysio(Physio physio){
+        try{
+
+            if (physio.getFullName().trim().isEmpty()) {
+                System.out.println("Physio name cannot be empty.");
+                return false;
+            }
+            if (physio.getAddress().trim().isEmpty()) {
+                System.out.println("Address cannot be empty");
+                return false;
+            }
+            if (physio.getPhone().trim().isEmpty()) {
+                System.out.println("Phone number cannot be empty");
+                return false;
+            } 
+            
+             if (isDuplicateId(physio.getId())) {
+                System.out.println("Physio ID already exists.");
+                return false;
+            }
+            
+            // Load existing physios, add new physio, and save
+            List<Physio> physios = PhysioFileHandler.readPhysiosFromFile();
+            physios.add(physio);
+            PhysioFileHandler.savePhysiosToJson(physios); 
+
+            // Save the patient to the file
+            if (PhysioFileHandler.savePhysiosToJson(physios)) {
+                System.out.println("Physio added successfully and saved to file!");
+                return true;
+            } else {
+                System.out.println("Error: Could not save the physio to the file.");
+                return false;
+            }
+            
+        } catch (Exception e) {
+            System.out.println("An error occurred while saving the physio: " + e.getMessage());
+            return false;
+        }
+    }
+
     
     //this function is used to delete a physio
     public void deletePhysio() {
@@ -237,7 +274,7 @@ public class PhysioController {
     }
     
     // this function is used to set a new ID to the newly added physio
-    private int generateNextPhysiotId() {
+    public int generateNextPhysiotId() {
         List<Physio> physios = PhysioFileHandler.readPhysiosFromFile();
         int maxId = 0;
 
@@ -267,6 +304,12 @@ public class PhysioController {
             physioMenuexit = true;
             System.out.println("Exiting the program. Goodbye!");
         }
+    }
+    
+    // method to check if the ID already exists
+    private static boolean isDuplicateId(int physioId) {
+        List<Physio> physios = PhysioFileHandler.readPhysiosFromFile();
+        return physios.stream().anyMatch(p -> p.getId() == physioId);
     }
     
 }
