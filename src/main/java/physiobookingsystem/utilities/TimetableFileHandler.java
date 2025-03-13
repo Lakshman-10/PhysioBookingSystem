@@ -68,7 +68,7 @@ public class TimetableFileHandler {
             return false;
         }
 
-        if (!(selectedSlot.getStatus().equalsIgnoreCase("Available") || selectedSlot.getStatus().equalsIgnoreCase("Cancelled"))) {
+        if (selectedSlot.getStatus().equalsIgnoreCase("Booked") ) {
             System.out.println("This slot is already booked.");
             return false;
         }
@@ -161,6 +161,17 @@ public class TimetableFileHandler {
         }
         catch (IOException e) {
             System.out.println("Error reading timetable: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    // Save all timetable slots to file
+    public static boolean saveTimetableToJson(List<Timetable> physios) {
+        try {
+            objectMapper.writeValue(new File(FILE_PATH), physios);
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error saving slots: " + e.getMessage());
             return false;
         }
     }
