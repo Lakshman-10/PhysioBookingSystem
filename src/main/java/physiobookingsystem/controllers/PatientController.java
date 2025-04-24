@@ -33,8 +33,9 @@ public class PatientController {
             System.out.println("3. View All Patients");
             System.out.println("4. Return to Main Menu");
             System.out.print("Enter your choice: ");
-            try{
-                int choice = new java.util.Scanner(System.in).nextInt();
+            try{ 
+                int choice = scanner.nextInt();
+                scanner.nextLine();
 
                 switch (choice) {
                     case 1:
@@ -59,6 +60,7 @@ public class PatientController {
                 catch (Exception e) {
                     System.out.println("An error occurred: " + e.getMessage());
                     System.out.println("Please enter a valid input.");
+                    scanner.nextLine();
                 }
         }
     }
@@ -87,14 +89,14 @@ public class PatientController {
             int newId = generateNextPatientId();
 
             System.out.print("\nEnter Full Name: ");
-            String fullName = scanner.next();
+            String fullName = scanner.nextLine().trim();
 
             System.out.print("Enter Address: ");
             scanner.nextLine(); // Consume leftover newline
-            String address = scanner.nextLine();
+            String address = scanner.nextLine().trim();
 
             System.out.print("Enter Phone Number: ");
-            String phone = scanner.next();            
+            String phone = scanner.nextLine().trim();           
 
             // Create a new patient object
             Patient newPatient = new Patient(newId, fullName, address, phone);

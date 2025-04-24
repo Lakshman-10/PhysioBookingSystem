@@ -38,7 +38,8 @@ public class PhysioController {
             System.out.println("4. Return to Main Menu");
             System.out.print("Enter your choice: ");
             try{
-                int choice = new java.util.Scanner(System.in).nextInt();
+                int choice = scanner.nextInt();
+                scanner.nextLine();
                 
                 switch (choice) {
                     case 1:
@@ -63,6 +64,7 @@ public class PhysioController {
                 catch (Exception e) {
                     System.out.println("An error occurred: " + e.getMessage());
                     System.out.println("Please enter a valid input.");
+                    scanner.nextLine();
                 }
         }
     }
@@ -132,10 +134,7 @@ public class PhysioController {
             boolean addMore = true;
 
             while (addMore) {
-                int physioId = generateNextPhysiotId();
-                if (scanner.hasNextLine()) {
-                    scanner.nextLine(); 
-                }
+                int physioId = generateNextPhysiotId(); 
 
                 System.out.print("\nEnter Full Name: ");
                 String fullName = scanner.nextLine().trim();
