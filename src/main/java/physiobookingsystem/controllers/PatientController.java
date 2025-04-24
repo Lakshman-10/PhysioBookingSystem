@@ -92,7 +92,6 @@ public class PatientController {
             String fullName = scanner.nextLine().trim();
 
             System.out.print("Enter Address: ");
-            scanner.nextLine(); // Consume leftover newline
             String address = scanner.nextLine().trim();
 
             System.out.print("Enter Phone Number: ");
